@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>PROTORUB.TanachatG - Box Calculator</title>
+  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3437/3437367.png" type="image/png">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f1ec;
+      color: #3e2f1c;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 50px auto;
+      background: #fffdfb;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+      text-align: center;
+      font-weight: 700;
+      font-size: 2.4em;
+      margin-bottom: 30px;
+      color: #5e4520;
+    }
+
+    label {
+      font-weight: 500;
+      margin-top: 15px;
+      display: block;
+    }
+
+    select, input {
+      width: 100%;
+      padding: 12px;
+      margin-top: 5px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 1em;
+      background: #f9f9f9;
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 14px;
+      background: #a47551;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    button:hover {
+      background: #8d5e3e;
+    }
+
+    .result {
+      margin-top: 30px;
+      background: #fefcf9;
+      padding: 25px;
+      border-radius: 15px;
+      border-left: 6px solid #a47551;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 60px;
+      font-size: 0.85em;
+      color: #a19a92;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>PROTORUB.TanachatG</h1>
+
+    <label>เลือกประเภทกล่อง:</label>
+    <select id="boxType">
+      <option value="AB">Box AB</option>
+      <option value="2A">Box 2A</option>
+      <option value="B">Box B</option>
+      <option value="C">Box C</option>
+      <option value="2B">Box 2B</option>
+      <option value="2C">Box 2C</option>
+      <option value="D11">Box D11</option>
+    </select>
+
+    <label>จำนวนชิ้น (Pcs):</label>
+    <input type="number" id="pcsInput" placeholder="ใส่จำนวน เช่น 30" />
+
+    <button onclick="calculate()">📦 คำนวณ Rub และจำนวนชิ้น</button>
+
+    <div class="result" id="result" style="display:none;"></div>
+  </div>
+
+  <div class="footer">
+    © 2025 PROTORUB.TanachatG | Personal Tool
+  </div>
+
+  <script>
+    const boxData = {
+      AB:  { rub: 2, pcsPerRub: 2 },
+      "2A":{ rub: 2, pcsPerRub: 2 },
+      B:   { rub: 2, pcsPerRub: 4 },
+      C:   { rub: 3, pcsPerRub: 2 },
+      "2B":{ rub: 4, pcsPerRub: 4 },
+      "2C":{ rub: 9, pcsPerRub: 2 },
+      D11: { rub: 12, pcsPerRub: 2 }
+    };
+
+    function calculate() {
+      const type = document.getElementById("boxType").value;
+      const totalPcs = parseInt(document.getElementById("pcsInput").value);
+      const resultDiv = document.getElementById("result");
+
+      if (isNaN(totalPcs) || totalPcs <= 0) {
+        resultDiv.innerHTML = "❌ กรุณาใส่จำนวนชิ้นที่มากกว่า 0";
+        resultDiv.style.display = "block";
+        return;
+      }
+
+      const rubCount = boxData[type].rub;
+      const pcsPerRub = Math.floor(totalPcs / rubCount);
+      const remainder = totalPcs % rubCount;
+
+      let output = `<p>📦 Box Type: <strong>${type}</strong></p>`;
+      output += `<p>🔴 Total Rubs Used: <strong>${rubCount} Rub</strong></p>`;
+
+      for (let i = 1; i <= rubCount; i++) {
+        const pcs = pcsPerRub + (i <= remainder ? 1 : 0);
+        output += `<p>Rub ${i}: <strong>${pcs} pcs</strong></p>`;
+      }
+
+      output += `<p>✅ Total Pieces: <strong>${totalPcs}</strong></p>`;
+
+      resultDiv.innerHTML = output;
+      resultDiv.style.display = "block";
+    }
+  </script>
+
+</body>
+</html>
