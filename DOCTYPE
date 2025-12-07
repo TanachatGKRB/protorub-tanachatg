@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>PROTORUB - Box Calculator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet" />
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f5f1ec;
+      margin: 0;
+      padding: 0;
+      color: #3e2f1c;
+    }
+
+    .layout {
+      display: flex;
+      gap: 30px;
+      padding: 40px;
+    }
+
+    .left-panel {
+      flex: 1;
+      background: #fffdfb;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    }
+
+    .right-panel {
+      flex: 1;
+      background: #ffffff;
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.06);
+    }
+
+    h1 {
+      text-align: center;
+      font-weight: 700;
+      margin-bottom: 20px;
+      font-size: 2em;
+      color: #5e4520;
+    }
+
+    label {
+      margin-top: 12px;
+      font-weight: 500;
+      display: block;
+    }
+
+    select, input {
+      width: 100%;
+      padding: 12px;
+      margin-top: 5px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      background: #fafafa;
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      background: #a47551;
+      color: white;
+      font-size: 1em;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #8d5e3e;
+    }
+
+    .result-box {
+      margin-top: 25px;
+      padding: 20px;
+      background: #fff9f3;
+      border-left: 6px solid #a47551;
+      border-radius: 12px;
+      display: none;
+    }
+
+    .rub-item {
+      margin: 6px 0;
+      font-weight: 500;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      font-size: 0.9em;
+    }
+
+    table, th, td {
+      border: 1px solid #d3c9bd;
+    }
+
+    th {
+      background: #e8dfd4;
+      padding: 10px;
+    }
+
+    td {
+      padding: 8px;
+    }
+
+    /* ------------------ NEW EXAMPLE CARD ------------------ */
+
+    .example-card {
+      background: #f5f5f5;
+      padding: 40px;
+      border-radius: 28px;
+      text-align: center;
+      width: 600px;
+      margin: 0 auto;
+      margin-top: 30px;
+      display: none;
+    }
+
+    .summary-box {
+      background: white;
+      padding: 12px 20px;
+      border-radius: 20px;
+      font-weight: 700;
+      color: #7a4a21;
+      margin-bottom: 25px;
+      display: inline-block;
+    }
+
+    .example-title {
+      font-size: 42px;
+      font-weight: 900;
+      color: #5e4520;
+      margin-bottom: 20px;
+    }
+
+    .example-label {
+      text-align: left;
+      font-weight: bold;
+      color: #7a4a21;
+      margin: 15px 0;
+      font-size: 18px;
+    }
+
+    .example-boxes {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 15px;
+    }
+
+    .item-box {
+      width: 110px;
+      height: 110px;
+      background: #888;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+  </style>
+</head>
+
+<body>
+
+<div class="layout">
+
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+    <h1>PROTORUB.TanachartG</h1>
+
+    <label>เลือกประเภทกล่อง:</label>
+    <select id="boxType"></select>
+
+    <label>จำนวนชิ้น (Pcs):</label>
+    <input type="number" id="pcsInput" placeholder="ใส่จำนวน เช่น 30" />
+
+    <button onclick="calculate()">คำนวณ Rub และจำนวนชิ้น📦</button>
+
+    <div class="result-box" id="result"></div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+    <h2 style="text-align:center;">Box Specification</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Box Type</th>
+          <th>Number of Rubs per Box</th>
+          <th>Pcs. per Rub</th>
+          <th>Arrangement Style</th>
+        </tr>
+      </thead>
+      <tbody id="boxTable"></tbody>
+    </table>
+
+    <!-- NEW EXAMPLE CARD -->
+    <div id="example-card" class="example-card">
+      <div class="summary-box">
+        <span id="summary-text"></span>
+      </div>
+
+      <h2 class="example-title" id="box-title"></h2>
+
+      <div class="example-label">Example</div>
+
+      <div id="example-boxes" class="example-boxes"></div>
+
+      <p class="example-desc">
+        Products with thinner sizes should be arranged first,<br>
+        followed by medium and large sizes.
+      </p>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+// Main box data for calculator
+const boxData = {
+  AB: { rub: 2, pcs: 2, style: "One rub contains 2 pcs in one row" },
+  "2A": { rub: 2, pcs: 2, style: "One rub contains 2 pcs in one row" },
+  B: { rub: 2, pcs: 4, style: "One rub contains 3–5 pcs in one row" },
+  C: { rub: 3, pcs: 2, style: "One rub contains 2 pcs in one row" },
+  "2B": { rub: 4, pcs: 4, style: "One rub contains 3–5 pcs in one row" },
+  "2C": { rub: 9, pcs: 2, style: "One rub contains 2 pcs in one row" },
+  D11: { rub: 12, pcs: 2, style: "One rub contains 2 pcs in one row" }
+};
+
+// Example card settings
+const boxSettings = {
+  "AB": { rub: 2, pcs: 2 },
+  "2A": { rub: 2, pcs: 2 },
+  "C":  { rub: 3, pcs: 2 },
+  "2B": { rub: 4, pcs: 5 },
+  "2C": { rub: 9, pcs: 2 },
+  "B":  { rub: 2, pcs: 5 },
+  "D11": { rub: 12, pcs: 2 }
+};
+
+// Fill dropdown
+const select = document.getElementById("boxType");
+Object.keys(boxData).forEach(k => {
+  const opt = document.createElement("option");
+  opt.value = k;
+  opt.textContent = "Box " + k;
+  select.appendChild(opt);
+});
+
+// Fill table
+const table = document.getElementById("boxTable");
+Object.keys(boxData).forEach(k => {
+  const d = boxData[k];
+  table.innerHTML += `
+    <tr>
+      <td>Box ${k}</td>
+      <td>${d.rub} Rub</td>
+      <td>${d.pcs} Pcs/Rub</td>
+      <td>${d.style}</td>
+    </tr>`;
+});
+
+
+// CALCULATION + SHOW EXAMPLE CARD
+function calculate() {
+  const type = document.getElementById("boxType").value;
+  const totalPcs = parseInt(document.getElementById("pcsInput").value);
+  const result = document.getElementById("result");
+
+  if (!totalPcs || totalPcs <= 0) {
+    result.style.display = "block";
+    result.innerHTML = "❌ กรุณากรอกจำนวนชิ้นให้ถูกต้อง";
+    return;
+  }
+
+  const rubCount = boxData[type].rub;
+  const pcsPerRub = Math.floor(totalPcs / rubCount);
+  const remainder = totalPcs % rubCount;
+
+  let output = `<p>📦 Box Type: <strong>${type}</strong></p>`;
+  output += `<p>🔴 Total Rubs Used: <strong>${rubCount} Rub</strong></p>`;
+
+  for (let i = 1; i <= rubCount; i++) {
+    const pcs = pcsPerRub + (i <= remainder ? 1 : 0);
+    output += `<p class='rub-item'>Rub ${i}: <strong>${pcs} pcs</strong></p>`;
+  }
+
+  output += `<p>✅ Total Pieces: <strong>${totalPcs}</strong></p>`;
+
+  result.innerHTML = output;
+  result.style.display = "block";
+
+  // SHOW EXAMPLE CARD
+  showExample(type, totalPcs);
+}
+
+
+// NEW EXAMPLE CARD FUNCTION
+function showExample(boxType, totalPcs) {
+  const setting = boxSettings[boxType];
+  if (!setting) return;
+
+  let rub = setting.rub;
+  let pcsPerRub = setting.pcs;
+
+  let summaryText = `${totalPcs} Pcs / ${rub} Rub / ${pcsPerRub} Pcs per Rub`;
+
+  document.getElementById("summary-text").innerText = summaryText;
+
+  document.getElementById("box-title").innerText = "Arrangement Example";
+
+  let container = document.getElementById("example-boxes");
+  container.innerHTML = "";
+
+  for (let i = 0; i < pcsPerRub; i++) {
+    let box = document.createElement("div");
+    box.classList.add("item-box");
+    box.innerText = "Necklaces";
+    container.appendChild(box);
+  }
+
+  document.getElementById("example-card").style.display = "block";
+}
+
+</script>
+
+</body>
+</html>
